@@ -1,0 +1,14 @@
+KH.psf
+KH.pdb
+nvt.dcd
+0
+14
+4000
+4000
+12
+12
+12
+80
+300.00
+13       ! ASUMPTION : cavRad = rHS + sigLJ
+101

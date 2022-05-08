@@ -1,0 +1,20 @@
+This directory contains the analysis LAMMPS script that is used to 
+get the field and electrostatics potential at the center of KH solute.
+
+LAMMPS (2 Jul 2021) version was used for this analysis.
+
+The analysis LAMMPS script is called in.anly, where one can find all the parameters for the analysis.
+
+Running anly.sh generates dump.force0kh.dat containing the field and electrostatics potential.
+Field_pot.dat in the above directory is generated after getting the related lines from the dump.force0kh.dat file.
+
+
+Format of dump.force0kh.dat for the related lines is:
+first column: atom number
+second column: atom type
+thrid column:  Ex in kcal/mol/e/Ang
+fourth column: Ey in kcal/mol/e/Ang
+fifth column:  Ez in kcal/mol/e/Ang
+sixth column:  0.5 of electrostaic potential in kcal/mol/e
+ 
+

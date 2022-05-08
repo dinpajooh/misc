@@ -1,0 +1,10 @@
+This is an analysis code used to get the dipole moments, etc. for the analysis.
+
+See details in dipole.f90.
+
+
+use make to create the executable for the analysis. This generates the following
+Dipole-anly.e
+
+For a given trajectory "./Dipole-anly.e < input" generates the m0xx.dat files for the final analysis.
+

@@ -1,0 +1,21 @@
+The analysis of trajectories of the solvated Kihara solute with RHS of 10 Ang  (epsilon=3.7 kJ/mol, sigma=3.0 Ang).
+The solvent is TIP3P water model.
+
+
+A sample lammps trajectory (dump.cords_xyz.dat) is available in the LAMMPS-ANLY directory. 
+Analysing such trajectory files as described in LAMMPS-ANLY generates Field_pot.dat file, which 
+contains the field (E) and electrostatic potential (phi) at the center of KH solute:
+
+Format of Field_pot.dat file:
+first column: atom number
+second column: atom type
+thrid column:  Ex in kcal/mol/e/Ang
+fourth column: Ey in kcal/mol/e/Ang
+fifth column:  Ez in kcal/mol/e/Ang
+sixth column:  0.5 of electrostaic potential in kcal/mol/e
+
+All the parameters for this analysis including the particle-particle particle-mesh solver 
+for the electrostaic interactions can be found in in.anly file in LAMMPS-ANLY directory.
+
+More details about LAMMPS-ANALYSIS calculations can be found in the LAMMPS-ANLY directory.
+

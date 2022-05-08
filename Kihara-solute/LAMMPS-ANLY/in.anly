@@ -1,0 +1,97 @@
+# 1. INITIALIZATION
+#allows pair, bond, bending and dihedral interactions
+atom_style full
+
+  # periodic (video game) boundaries in all cartesian directions
+boundary p p p
+
+  # uses real units (instead of units based on pair potential parameters).  List of units used in manual
+units real
+
+###########
+# 2. ATOM DEFINITION
+########## 
+
+   ##
+   # Read in data from starting configuration file
+   ##  
+
+read_data lammps-AT-config 
+
+read_dump dump.cords_xyz.dat 0 x y z #format native box yes scaled no wrapped yes
+
+   ##
+   # Specify the nature of the bond interactions
+   ##
+
+bond_style      harmonic                             #Sets the bond type as harmonic
+angle_style     harmonic                             #Sets the triplet bond type as harmonic
+dihedral_style  none                                 #SPC/e has no dihedrals (quadruplets)
+improper_style  none                                 #SPC/e has no improper quadruplets
+
+bond_coeff      1 5000.00 0.9572                     #Oxygen-Hydrogen bond parameters (1~ang)
+angle_coeff     1 500.0 104.52                       #Hydrogen-Oxygen-Hydrogen angle parameters (angle=109.47deg)
+                                                     #NOTE: harmonic moduli do not matter, since the rigid bonds are preserved by SHAKE
+
+
+mass 1   15.999
+mass 2   1.008
+mass 3   40.0
+
+   ##                                                   
+   # Specify the nature of intermolecular pair interactions 
+   ##                                                    
+
+pair_style      lj/cut/coul/long 14.0 14.0           #LJ with 14.0 cutoff, Coulomb with 14.0 cutoff
+pair_modify     tail yes                             #Analytic Long-range Tail corrections, for the LJ interactions
+kspace_style    pppm 1.0e-5                          #PPPM Ewald, relative error in forces
+                                                     #kspace uses tinfoil/conducting boundary conditions by default
+
+pair_coeff      1 1 0.1521032 3.15061               #Oxygen-Oxygen LJ(dispersion) parameters
+pair_coeff      1 2 0.0000 0.0000                   #Hydrogen-Hydrogen LJ(disperson) parameters 
+pair_coeff      1 3  0.0      3.0                   # switch off Oxygen-KH interactions for KH-solvent analysis
+pair_coeff      2 2  0.0000 0.0000                  #Hydrogen-Hydrogen LJ(disperson) parameters
+pair_coeff      2 3  0.0000 0.0000                  #Hydrogen-X LJ(disperson) parameters
+pair_coeff      3 3  0.0000 0.000                   #KH-KH LJ(disperson) parameters
+
+
+################
+# 3.  Simulation Settings
+###############
+
+ #ensures that atoms on the same molecule are excluded from pair interactions (necessary for United atom near neighbors)
+neighbor 	2.0 bin
+neigh_modify    every 1 delay 0 check yes
+#communicate single cutoff 50.0 vel yes
+neigh_modify one 10000
+
+reset_timestep 0
+
+group kh_atom type 3
+
+#SHAKE Parameters to preserve bondlengths
+fix             1 all shake 0.0001 20 0 b 1  a 1      #0.0001 = accuracy tolerance of SHAKE
+                                                     #20 = max number of iterations in each SHAKE solution
+                                                     #0 = print SHAKE statistics every "this many" timesteps (0 = never)
+                                                     #b 1 = 1 bond type
+                                                     #a 1 = 1 angle typ
+
+
+velocity all create 298 4928459  dist gaussian
+fix 2 all nvt temp 298.0 298.0 50.0 
+
+timestep 2.0
+
+
+
+#Output Style
+thermo          1                                 #Specify the interval between screen output of thermodynamic averages
+thermo_style    custom step temp density epair press #Format for screen output of thermodynamics
+
+compute khpot kh_atom pe/atom pair kspace
+
+dump kho  kh_atom custom 1 dump.force0kh.dat id type fx fy fz c_khpot
+
+
+rerun  dump.cords_xyz.dat first 0 last 10 dump x y z 
+
